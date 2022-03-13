@@ -28,9 +28,10 @@ Example REST API for books and authors CRUD based on Symfony Framework.
 Using `Postman` or `Insomnia`, request `/en/author` or `/en/book`. It will tell available routes and its request params.
 
 # Tests
- - `make checks` for full tests run
- - `make check-cs` for code-style tests
- - `make check-phpstan` and `make check-psalm` for static code analysis
-
+ - `make test-db-init` to create test schema
+ - `make tests` for full tests run
+ - `make test-cs` for code-style tests
+ - `make test-phpstan` and `test check-psalm` for static code analysis
+ - `make test-phpunit` for unit tests
 
 [:license:]:   https://github.com/BeMySlaveDarlin/bookshelf/blob/master/LICENSE

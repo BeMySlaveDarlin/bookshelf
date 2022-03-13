@@ -63,6 +63,16 @@ class BookRepository extends ServiceEntityRepository implements RepositoryToArra
         return $book;
     }
 
+    public function findFirst(): ?Book
+    {
+        return $this
+            ->createQueryBuilder('book')
+            ->orderBy('book.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findOneById(int $id)
     {
         $result = parent::findOneBy(['id' => $id]);

@@ -63,6 +63,16 @@ class AuthorRepository extends ServiceEntityRepository implements RepositoryToAr
         return $author;
     }
 
+    public function findFirst(): ?Author
+    {
+        return $this
+            ->createQueryBuilder('author')
+            ->orderBy('author.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findOneById(int $id)
     {
         $result = parent::findOneBy(['id' => $id]);

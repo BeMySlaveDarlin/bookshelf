@@ -7,7 +7,7 @@
          colors="true"
          bootstrap="tests/bootstrap.php"
          convertDeprecationsToExceptions="false"
-         cacheResultFile="/app/var/phpunit/.phpunit.result.cache"
+         cacheResultFile="/app/var/cache/phpunit/.phpunit.result.cache"
 >
     <php>
         <ini name="display_errors" value="1" />
