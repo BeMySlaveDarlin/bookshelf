@@ -1,0 +1,7 @@
+# Ignore cache
+*
+!.gitignore
+!phpcs
+!phpstan
+!phpunit
+!psalm
