@@ -24,6 +24,12 @@ compose: down build up
 	@docker-compose exec -T service-php composer clear-cache
 	@docker-compose exec -T service-php composer install --no-interaction --optimize-autoloader
 
+# Databse commands
+db-migrate: .env
+	@docker-compose exec -T service-php console doctrine:migrations:migrate -q
+db-seed: .env
+	@docker-compose exec -T service-php  console doctrine:fixtures:load -q
+
 # Testing commands
 checks: check-cs check-phpstan check-psalm
 check-cs:
