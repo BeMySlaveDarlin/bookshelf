@@ -13,18 +13,27 @@ class ResponseFactory
 {
     public const JSON_OPTIONS = \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES;
 
-    public function createSuccessResponse(string $lang, array $items, ?string $message = null): JsonResponse
+    private ?string $lang = null;
+
+    public function setLang(?string $lang = null): ResponseFactory
     {
-        $data = $this->createResponseData($lang, debug_backtrace()[1]['function']);
+        $this->lang = $lang;
+
+        return $this;
+    }
+
+    public function createSuccessResponse(array $items, ?string $message = null): JsonResponse
+    {
+        $data = $this->createResponseData(debug_backtrace()[1]['function']);
         $data['data'] = $items;
         $data['message'] = $message ?? 'Ok';
 
         return $this->createResponseObject($data, Response::HTTP_OK);
     }
 
-    public function createErrorResponse(string $lang, \Throwable $throwable): JsonResponse
+    public function createErrorResponse(\Throwable $throwable): JsonResponse
     {
-        $data = $this->createResponseData($lang, debug_backtrace()[1]['function']);
+        $data = $this->createResponseData(debug_backtrace()[1]['function']);
         $data['error'] = $throwable->getMessage();
 
         $status = Response::HTTP_INTERNAL_SERVER_ERROR;
@@ -38,12 +47,15 @@ class ResponseFactory
         return $this->createResponseObject($data, $status);
     }
 
-    private function createResponseData(string $lang, string $action): array
+    private function createResponseData(string $action): array
     {
-        return [
-            'lang' => $lang,
-            'action' => $action,
-        ];
+        $responseData = [];
+        if (null !== $this->lang) {
+            $responseData['lang'] = $this->lang;
+        }
+        $responseData['action'] = $action;
+
+        return $responseData;
     }
 
     private function createResponseObject(array $data, int $status): JsonResponse

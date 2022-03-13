@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Helper\TypeCaster;
 use App\Repository\AuthorRepository;
 use App\Repository\BookRepository;
 use App\Response\ResponseFactory;
@@ -13,18 +14,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BookController extends AbstractController
 {
+    private ResponseFactory $formatter;
     private AuthorRepository $authorRepository;
     private BookRepository $bookRepository;
-    private ResponseFactory $formatter;
 
     public function __construct(
+        ResponseFactory $responseFormatter,
         AuthorRepository $authorRepository,
-        BookRepository $bookRepository,
-        ResponseFactory $responseFormatter
+        BookRepository $bookRepository
     ) {
+        $this->formatter = $responseFormatter;
         $this->authorRepository = $authorRepository;
         $this->bookRepository = $bookRepository;
-        $this->formatter = $responseFormatter;
     }
 
     /**
@@ -32,16 +33,17 @@ class BookController extends AbstractController
      */
     public function search(string $lang, Request $request): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
             $books = $this->bookRepository->findByTitle(
-                (string) $request->query->get('title', 'book'),
-                (int) $request->query->get('page', 1),
-                (int) $request->query->get('maxResults', 10),
+                TypeCaster::asString($request->query->get('title')),
+                TypeCaster::asInt($request->query->get('page', 1)),
+                TypeCaster::asInt($request->query->get('maxResults', 10)),
             );
 
-            return $this->formatter->createSuccessResponse($lang, $this->bookRepository->toArray($books));
+            return $this->formatter->createSuccessResponse($this->bookRepository->toArray($books));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 
@@ -50,17 +52,26 @@ class BookController extends AbstractController
      */
     public function create(string $lang, Request $request): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
-            $book = $this->bookRepository->create((string) $request->request->get('title'), $lang);
-            $author = $this->authorRepository->findOneOrCreate((string) $request->request->get('title'), $lang);
+            $book = $this->bookRepository->create(
+                TypeCaster::asString($request->request->get('title')),
+                $lang
+            );
+            $author = $this->authorRepository->findOneOrCreate(
+                TypeCaster::asString($request->request->get('author')),
+                $lang
+            );
             $book->setAuthor($author);
 
-            $this->bookRepository->add($book);
-            $this->authorRepository->add($author);
+            $this->authorRepository->add($author, false);
+            $this->bookRepository->add($book, false);
 
-            return $this->formatter->createSuccessResponse($lang, $book->toArray($lang));
+            $this->bookRepository->flush();
+
+            return $this->formatter->createSuccessResponse($book->toArray($lang));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 
@@ -69,12 +80,13 @@ class BookController extends AbstractController
      */
     public function view(string $lang, int $id): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
             $book = $this->bookRepository->findOneById($id);
 
-            return $this->formatter->createSuccessResponse($lang, $book->toArray($lang));
+            return $this->formatter->createSuccessResponse($book->toArray($lang));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 
@@ -83,15 +95,16 @@ class BookController extends AbstractController
      */
     public function update(string $lang, int $id, Request $request): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
             $book = $this->bookRepository->findOneById($id);
-            $book->translate($lang)->setTitle($request->request->get('title'));
+            $book->translate($lang)->setTitle(TypeCaster::asString($request->request->get('title')));
 
             $this->bookRepository->add($book);
 
-            return $this->formatter->createSuccessResponse($lang, $book->toArray($lang));
+            return $this->formatter->createSuccessResponse($book->toArray($lang));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 
@@ -100,14 +113,15 @@ class BookController extends AbstractController
      */
     public function delete(string $lang, int $id): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
             $book = $this->bookRepository->findOneById($id);
 
             $this->bookRepository->remove($book);
 
-            return $this->formatter->createSuccessResponse($lang, [], \sprintf('Book %s deleted', $id));
+            return $this->formatter->createSuccessResponse([], \sprintf('Book %s deleted', $id));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 

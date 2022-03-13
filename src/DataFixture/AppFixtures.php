@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataFixtures;
+namespace App\DataFixture;
 
 use App\Repository\AuthorRepository;
 use App\Repository\BookRepository;

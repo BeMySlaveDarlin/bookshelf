@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,7 +13,7 @@ use Knp\DoctrineBehaviors\Model\Translatable\TranslatableTrait;
  * Book entity
  *
  * @ORM\Table(name="book")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=BookRepository::class)
  */
 class Book implements TranslatableInterface, EntityToArrayInterface
 {

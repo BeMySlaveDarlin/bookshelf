@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\AuthorRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface;
 use Knp\DoctrineBehaviors\Model\Translatable\TranslatableTrait;
@@ -10,7 +11,7 @@ use Knp\DoctrineBehaviors\Model\Translatable\TranslatableTrait;
  * Author entity
  *
  * @ORM\Table(name="author")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=AuthorRepository::class)
  */
 class Author implements TranslatableInterface, EntityToArrayInterface
 {

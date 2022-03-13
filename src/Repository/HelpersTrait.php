@@ -6,7 +6,7 @@ namespace App\Repository;
 
 use App\Entity\EntityToArrayInterface;
 
-trait ToArrayTrait
+trait HelpersTrait
 {
     public function toArray(array $entities, string $lang = 'ru'): array
     {
@@ -20,5 +20,10 @@ trait ToArrayTrait
         }
 
         return $data;
+    }
+
+    public function flush(): void
+    {
+        $this->_em->flush();
     }
 }

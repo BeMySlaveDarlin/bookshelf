@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Helper\TypeCaster;
 use App\Repository\AuthorRepository;
 use App\Response\ResponseFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,13 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AuthorController extends AbstractController
 {
-    private AuthorRepository $authorRepository;
     private ResponseFactory $formatter;
+    private AuthorRepository $authorRepository;
 
-    public function __construct(AuthorRepository $authorRepository, ResponseFactory $responseFormatter)
+    public function __construct(ResponseFactory $responseFormatter, AuthorRepository $authorRepository)
     {
-        $this->authorRepository = $authorRepository;
         $this->formatter = $responseFormatter;
+        $this->authorRepository = $authorRepository;
     }
 
     /**
@@ -26,16 +27,17 @@ class AuthorController extends AbstractController
      */
     public function search(string $lang, Request $request): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
             $authors = $this->authorRepository->findByName(
-                (string) $request->query->get('name', 'author'),
-                (int) $request->query->get('page', 1),
-                (int) $request->query->get('maxResults', 10),
+                TypeCaster::asString($request->query->get('name')),
+                TypeCaster::asInt($request->query->get('page', 1)),
+                TypeCaster::asInt($request->query->get('maxResults', 10)),
             );
 
-            return $this->formatter->createSuccessResponse($lang, $this->authorRepository->toArray($authors));
+            return $this->formatter->createSuccessResponse($this->authorRepository->toArray($authors));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 
@@ -44,14 +46,18 @@ class AuthorController extends AbstractController
      */
     public function create(string $lang, Request $request): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
-            $author = $this->authorRepository->create((string) $request->request->get('name'), $lang);
+            $author = $this->authorRepository->create(
+                TypeCaster::asString($request->request->get('name')),
+                $lang
+            );
 
             $this->authorRepository->add($author);
 
-            return $this->formatter->createSuccessResponse($lang, $author->toArray($lang));
+            return $this->formatter->createSuccessResponse($author->toArray($lang));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 
@@ -60,12 +66,13 @@ class AuthorController extends AbstractController
      */
     public function view(string $lang, int $id): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
             $author = $this->authorRepository->findOneById($id);
 
-            return $this->formatter->createSuccessResponse($lang, $author->toArray($lang));
+            return $this->formatter->createSuccessResponse($author->toArray($lang));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 
@@ -74,15 +81,18 @@ class AuthorController extends AbstractController
      */
     public function update(string $lang, int $id, Request $request): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
             $author = $this->authorRepository->findOneById($id);
-            $author->translate($lang)->setName($request->request->get('name'));
+            $author->translate($lang)->setName(
+                TypeCaster::asString($request->request->get('name'))
+            );
 
             $this->authorRepository->add($author);
 
-            return $this->formatter->createSuccessResponse($lang, $author->toArray($lang));
+            return $this->formatter->createSuccessResponse($author->toArray($lang));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 
@@ -91,14 +101,15 @@ class AuthorController extends AbstractController
      */
     public function delete(string $lang, int $id): JsonResponse
     {
+        $this->formatter->setLang($lang);
         try {
             $author = $this->authorRepository->findOneById($id);
 
             $this->authorRepository->remove($author);
 
-            return $this->formatter->createSuccessResponse($lang, [], \sprintf('Author %s deleted', $id));
+            return $this->formatter->createSuccessResponse([], \sprintf('Author %s deleted', $id));
         } catch (\Throwable $throwable) {
-            return $this->formatter->createErrorResponse($lang, $throwable);
+            return $this->formatter->createErrorResponse($throwable);
         }
     }
 
@@ -111,7 +122,7 @@ class AuthorController extends AbstractController
             'lang' => $lang,
             'status' => Response::HTTP_OK,
             'action' => 'index',
-            'items' => [
+            'data' => [
                 [
                     'description' => 'Paged list of authors by name',
                     'method' => 'GET',

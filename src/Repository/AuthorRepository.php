@@ -15,9 +15,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Author[]    findAll()
  * @method Author[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AuthorRepository extends ServiceEntityRepository implements RepositoryToArrayInterface
+class AuthorRepository extends ServiceEntityRepository implements RepositoryWithHelpersInterface
 {
-    use ToArrayTrait;
+    use HelpersTrait;
 
     public function __construct(ManagerRegistry $registry)
     {
