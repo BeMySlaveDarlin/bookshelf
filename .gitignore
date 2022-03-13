@@ -1,0 +1,10 @@
+# Ignore IDE workflow
+.idea
+
+# Sensitive files and folders
+.env
+.env.testing
+
+# Composer temp exception
+vendor
+composer.lock

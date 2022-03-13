@@ -1,0 +1,12 @@
+parameters:
+    level: 2
+    paths:
+        - src
+    bootstrapFiles:
+        - tests/bootstrap.php
+    tmpDir: %rootDir%/../../../var/cache/phpstan
+    ignoreErrors:
+            - '#Call to an undefined method [a-zA-Z0-9\\_]+::setName\(\)#'
+            - '#Call to an undefined method [a-zA-Z0-9\\_]+::getName\(\)#'
+            - '#Call to an undefined method [a-zA-Z0-9\\_]+::setTitle\(\)#'
+            - '#Call to an undefined method [a-zA-Z0-9\\_]+::getTitle\(\)#'

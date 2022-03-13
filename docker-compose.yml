@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  service-nginx:
+    image: nginx:alpine
+    restart: always
+    env_file:
+      - .env.example
+      - .env
+    volumes:
+      - .:/app
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/fastcgi.conf:/etc/nginx/fastcgi.conf
+      - ./docker/nginx/fastcgi-php.conf:/etc/nginx/fastcgi-php.conf
+    ports:
+      - ${SERVICE_NGINX_HTTP_PORTS}
+    depends_on:
+      - service-php
+
+  service-php:
+    build: ./docker/php
+    working_dir: /app
+    restart: always
+    env_file:
+      - .env.example
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - service-mysql
+
+  service-mysql:
+    build: ./docker/mysql
+    restart: always
+    env_file:
+      - .env.example
+      - .env
+    ports:
+      - ${SERVICE_STORAGE_MARIADB_PORTS}
+    volumes:
+      - ./docker/mysql/config:/etc/my.cnf.d
+      - ./var/mysql:/var/lib/mysql/

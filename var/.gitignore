@@ -1,0 +1,6 @@
+# Ignore cache
+*
+!.gitignore
+!cache
+!mysql
+!log
