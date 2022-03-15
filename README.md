@@ -1,6 +1,6 @@
-# Bookshelf API
+# Bookshelf and Wallet API examples
 
-Example REST API for books and authors CRUD based on Symfony Framework.
+Example REST API for books, authors and casual wallet CRUD based on Symfony Framework.
 
 ## Requirements
 
@@ -25,7 +25,9 @@ Example REST API for books and authors CRUD based on Symfony Framework.
 
 # Usage
 
-Using `Postman` or `Insomnia`, request `/en/author` or `/en/book`. It will tell available routes and its request params.
+For bookshelf api you can request helper routes `/en/author` or `/en/book`.
+
+For wallets api you can request helper route `/wallet`.
 
 # Tests
  - `make test-db-init` to create test schema

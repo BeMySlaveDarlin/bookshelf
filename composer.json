@@ -22,6 +22,7 @@
     "doctrine/doctrine-migrations-bundle": "^3.2",
     "doctrine/orm": "^2.11",
     "knplabs/doctrine-behaviors": "^2.2",
+    "moneyphp/money": "^3.3",
     "nubs/random-name-generator": "^2.2",
     "sensio/framework-extra-bundle": "^6.2",
     "symfony/console": "5.4.*",
