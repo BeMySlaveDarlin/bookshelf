@@ -21,7 +21,7 @@ Example REST API for books, authors and casual wallet CRUD based on Symfony Fram
 1. Copy environments to local `.env` file: `cp .env.example .env`
 2. Edit database credentials and service ports in `.env` file
 3. Run `make` or `make compose` to deploy application
-4. Run `make db-mograte` and `make db-seed` to initiate database population
+4. Run `make db-migrate` and `make db-seed` to initiate database population
 
 # Usage
 
